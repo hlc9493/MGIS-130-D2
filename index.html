@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ===== USER INTERFACE LAYER (structure) ===== -->
+  <main class="container">
+    <header>
+      <h1>Weather Dashboard</h1>
+      <p class="subtitle">Current conditions for any city</p>
+    </header>
+
+    <!-- Search form: where the user provides input -->
+    <form id="search-form" class="search" autocomplete="off">
+      <label for="city-input" class="visually-hidden">City name</label>
+      <input id="city-input" type="text" placeholder="Enter a city (e.g., Rochester)" required>
+      <button type="submit">Search</button>
+    </form>
+
+    <!-- Unit toggle: switches between °F and °C -->
+    <div class="unit-toggle" role="group" aria-label="Temperature unit">
+      <button type="button" id="unit-f" class="active">°F</button>
+      <button type="button" id="unit-c">°C</button>
+    </div>
+
+    <!-- Status messages (loading and errors) -->
+    <p id="status" class="status" aria-live="polite"></p>
+
+    <!-- Results card: hidden until data loads -->
+    <section id="weather-card" class="card hidden" aria-live="polite">
+      <div class="card-top">
+        <div>
+          <h2 id="city-name"></h2>
+          <p id="description" class="description"></p>
+        </div>
+        <span id="icon" class="icon" aria-hidden="true"></span>
+      </div>
+
+      <p id="temperature" class="temperature"></p>
+
+      <dl class="details">
+        <div><dt>Feels like</dt><dd id="feels-like"></dd></div>
+        <div><dt>Humidity</dt><dd id="humidity"></dd></div>
+        <div><dt>Wind</dt><dd id="wind"></dd></div>
+        <div><dt>Sunrise</dt><dd id="sunrise"></dd></div>
+        <div><dt>Sunset</dt><dd id="sunset"></dd></div>
+        <div><dt>High / Low</dt><dd id="high-low"></dd></div>
+      </dl>
+    </section>
+
+    <footer>Data from OpenWeather</footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
