@@ -10,12 +10,14 @@
 
 body {
     background: linear-gradient(135deg, #fce4ec 0%, #e8eaf6 50%, #e3f2fd 100%);
+    width: 100vw;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 1.5rem 1rem;
+    padding: 1rem;
     color: #37474f;
+    overflow-x: hidden;
 }
 
 /* ==========================================
@@ -25,15 +27,14 @@ body {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    padding: 2rem5;
     padding: 2.25rem 2rem;
     border-radius: 28px;
     box-shadow: 0 16px 40px rgba(100, 110, 140, 0.12),
                 0 2px 6px rgba(0, 0, 0, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.8);
     width: 100%;
-    /* Fits mobile perfectly while giving desktop a clean card dashboard look */
     max-width: 460px;
+    margin: auto; /* Guarantees centering even if flex fails */
     transition: all 0.3s ease;
 }
 
