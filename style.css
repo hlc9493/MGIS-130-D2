@@ -1,6 +1,3 @@
-/* ==========================================
-   RESET & BASE STYLES
-   ========================================== */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -20,17 +17,13 @@ body {
     overflow-x: hidden;
 }
 
-/* ==========================================
-   RESPONSIVE LAYOUT CONTAINER
-   ========================================== */
 .app-wrapper {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     padding: 2.25rem 2rem;
     border-radius: 28px;
-    box-shadow: 0 16px 40px rgba(100, 110, 140, 0.12),
-                0 2px 6px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 16px 40px rgba(100, 110, 140, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.8);
     width: 100%;
     max-width: 460px;
@@ -43,15 +36,11 @@ body {
         max-width: 520px;
         padding: 3rem 2.5rem;
     }
-
     .app-header h1 {
         font-size: 2.2rem;
     }
 }
 
-/* ==========================================
-   HEADER & TYPOGRAPHY
-   ========================================== */
 .app-header {
     text-align: center;
     margin-bottom: 1.25rem;
@@ -82,9 +71,6 @@ body {
     color: #78909c;
 }
 
-/* ==========================================
-   SETTINGS BOX
-   ========================================== */
 .settings-toggle-container {
     display: flex;
     justify-content: flex-end;
@@ -97,6 +83,8 @@ body {
     padding: 0.4rem 0.8rem;
     font-size: 0.85rem;
     border-radius: 10px;
+    border: none;
+    cursor: pointer;
 }
 
 .secondary-btn:hover {
@@ -110,7 +98,6 @@ body {
     padding: 1.25rem;
     margin-bottom: 1.5rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    animation: fadeIn 0.3s ease;
 }
 
 .settings-box h3 {
@@ -148,7 +135,6 @@ body {
     cursor: pointer;
     font-size: 0.85rem;
     border: 1px solid transparent;
-    transition: all 0.2s;
 }
 
 .radio-label input {
@@ -162,9 +148,6 @@ body {
     font-weight: bold;
 }
 
-/* ==========================================
-   SEARCH CONTROLS
-   ========================================== */
 .search-section {
     margin-bottom: 1.5rem;
 }
@@ -183,7 +166,6 @@ input[type="text"] {
     outline: none;
     font-size: 0.95rem;
     color: #37474f;
-    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input[type="text"]:focus {
@@ -200,20 +182,12 @@ button {
     cursor: pointer;
     font-size: 0.95rem;
     font-weight: 600;
-    transition: background-color 0.2s, transform 0.1s;
 }
 
 button:hover {
     background-color: #5c6bc0;
 }
 
-button:active {
-    transform: scale(0.97);
-}
-
-/* ==========================================
-   ERROR MESSAGE & DISPLAY STATE
-   ========================================== */
 .hidden {
     display: none !important;
 }
@@ -227,19 +201,14 @@ button:active {
     font-size: 0.9rem;
     text-align: center;
     border: 1px solid #ffcdd2;
-    animation: fadeIn 0.3s ease;
 }
 
-/* ==========================================
-   WEATHER CARD
-   ========================================== */
 .weather-card {
     background: linear-gradient(180deg, #ffffff 0%, #f4f5f9 100%);
     border-radius: 20px;
     padding: 1.75rem 1.5rem;
     border: 1px solid #e8eaf6;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
-    animation: fadeIn 0.4s ease;
 }
 
 .card-header {
@@ -273,7 +242,6 @@ button:active {
 .weather-icon {
     font-size: 4.2rem;
     line-height: 1;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
 }
 
 .temp-wrapper {
@@ -306,16 +274,4 @@ button:active {
     color: #5c6bc0;
     font-style: italic;
     margin-top: 0.25rem;
-}
-
-/* Entry Animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
