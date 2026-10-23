@@ -34,11 +34,10 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.8);
     width: 100%;
     max-width: 460px;
-    margin: auto; /* Guarantees centering even if flex fails */
+    margin: auto;
     transition: all 0.3s ease;
 }
 
-/* Desktop layout adjustment for web viewing */
 @media (min-width: 768px) {
     .app-wrapper {
         max-width: 520px;
@@ -55,7 +54,7 @@ body {
    ========================================== */
 .app-header {
     text-align: center;
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.25rem;
 }
 
 .app-badge {
@@ -81,6 +80,86 @@ body {
 .subtitle {
     font-size: 0.9rem;
     color: #78909c;
+}
+
+/* ==========================================
+   SETTINGS BOX
+   ========================================== */
+.settings-toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.secondary-btn {
+    background-color: #e8eaf6;
+    color: #5c6bc0;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 10px;
+}
+
+.secondary-btn:hover {
+    background-color: #c5cae9;
+}
+
+.settings-box {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    animation: fadeIn 0.3s ease;
+}
+
+.settings-box h3 {
+    font-size: 1.05rem;
+    color: #3f51b5;
+    margin-bottom: 0.75rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #546e7a;
+    margin-bottom: 0.35rem;
+}
+
+.radio-group {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+}
+
+.radio-label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    background: #f5f5f5;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.radio-label input {
+    display: none;
+}
+
+.radio-label:has(input:checked) {
+    background: #e8eaf6;
+    border-color: #9fa8da;
+    color: #3f51b5;
+    font-weight: bold;
 }
 
 /* ==========================================
@@ -220,6 +299,13 @@ button:active {
     font-size: 0.85rem;
     color: #78909c;
     margin-top: 0.35rem;
+}
+
+.preference-note {
+    font-size: 0.8rem;
+    color: #5c6bc0;
+    font-style: italic;
+    margin-top: 0.25rem;
 }
 
 /* Entry Animation */
