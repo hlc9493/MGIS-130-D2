@@ -1,4 +1,4 @@
-/* ==========================================
+* ==========================================
    1. DATA / STATE
    ========================================== */
 const state = {
@@ -16,7 +16,7 @@ const state = {
    2. BUSINESS / LOGIC RULES
    ========================================== */
 
-// Map WMO weather codes to descriptions and emojis
+// Map WMO weather codes to user-friendly descriptions and emojis
 function interpretWeatherCode(code) {
     const weatherMap = {
         0: { desc: 'Clear sky', emoji: '☀️' },
@@ -34,15 +34,25 @@ function interpretWeatherCode(code) {
         71: { desc: 'Slight snow fall', emoji: '🌨️' },
         73: { desc: 'Moderate snow fall', emoji: '❄️' },
         75: { desc: 'Heavy snow fall', emoji: '❄️' },
-        95: { desc: 'Thunderstorm', emoji: '⚡' }
+        80: { desc: 'Slight rain showers', emoji: '🌦️' },
+        81: { desc: 'Moderate rain showers', emoji: '🌧️' },
+        82: { desc: 'Violent rain showers', emoji: '⛈️' },
+        95: { desc: 'Thunderstorm', emoji: '⚡' },
+        96: { desc: 'Thunderstorm with slight hail', emoji: '🌩️' },
+        99: { desc: 'Thunderstorm with heavy hail', emoji: '🌩️' }
     };
 
     return weatherMap[code] || { desc: 'Unknown conditions', emoji: '🌈' };
 }
 
-// Fetch location coordinates from Geocoding API
+// Fetch coordinates for city name from Open-Meteo Geocoding API
 async function fetchCityCoordinates(cityName) {
     const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`);
+    
+    if (!response.ok) {
+        throw new Error("Unable to connect to location server.");
+    }
+    
     const data = await response.json();
     
     if (!data.results || data.results.length === 0) {
@@ -57,37 +67,43 @@ async function fetchCityCoordinates(cityName) {
     };
 }
 
-// Fetch weather data using coordinates
+// Fetch current temperature and condition code from Open-Meteo Weather API
 async function fetchWeatherData(lat, lon) {
     const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code&temperature_unit=fahrenheit`);
+    
+    if (!response.ok) {
+        throw new Error("Unable to fetch weather details at this time.");
+    }
+
     const data = await response.json();
     
     if (!data.current) {
-        throw new Error("Unable to retrieve weather data at this time.");
+        throw new Error("Weather data for this location is unavailable.");
     }
     
     return data.current;
 }
 
-// Main workflow handler
+// Coordinate flow when user searches
 async function handleSearch(cityName) {
     try {
         clearError();
+        
         if (!cityName.trim()) {
             throw new Error("Please enter a city name.");
         }
 
-        // 1. Get coordinates
+        // 1. Fetch location
         const location = await fetchCityCoordinates(cityName);
         state.city = `${location.name}${location.country ? ', ' + location.country : ''}`;
 
-        // 2. Get weather
+        // 2. Fetch current weather
         const current = await fetchWeatherData(location.latitude, location.longitude);
         state.temperature = Math.round(current.temperature_2m);
         state.apparentTemperature = Math.round(current.apparent_temperature);
         state.weatherCode = current.weather_code;
 
-        // 3. Interpret weather details
+        // 3. Interpret condition code
         const weatherDetails = interpretWeatherCode(state.weatherCode);
         state.description = weatherDetails.desc;
         state.emoji = weatherDetails.emoji;
