@@ -7,10 +7,8 @@ const state = {
     city: '',
     temp: null,
     feelsLike: null,
-    code: null,
     desc: '',
-    emoji: '☀️',
-    error: null
+    emoji: '☀️'
 };
 
 /* ==========================================
@@ -41,24 +39,31 @@ function getComfortMessage(temp, pref) {
 async function fetchWeather(cityName) {
     try {
         showError(null);
-        if (!cityName.trim()) throw new Error("Please enter a city name.");
+        if (!cityName || !cityName.trim()) {
+            throw new Error("Please enter a city name.");
+        }
 
-        // 1. Geocoding
-        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`);
+        // 1. Geocoding API
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName.trim())}&count=1`;
+        const geoRes = await fetch(geoUrl);
+        if (!geoRes.ok) throw new Error("Failed to connect to location server.");
+        
         const geoData = await geoRes.json();
         
         if (!geoData.results || geoData.results.length === 0) {
-            throw new Error("City not found. Check your spelling.");
+            throw new Error(`City "${cityName}" not found. Check your spelling.`);
         }
 
         const loc = geoData.results[0];
         state.city = `${loc.name}, ${loc.country || ''}`;
 
-        // 2. Weather
-        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,apparent_temperature,weather_code&temperature_unit=fahrenheit`);
-        const weatherData = await weatherRes.json();
+        // 2. Weather API
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,apparent_temperature,weather_code&temperature_unit=fahrenheit`;
+        const weatherRes = await fetch(weatherUrl);
+        if (!weatherRes.ok) throw new Error("Failed to connect to weather server.");
 
-        if (!weatherData.current) throw new Error("Could not retrieve weather data.");
+        const weatherData = await weatherRes.json();
+        if (!weatherData.current) throw new Error("Weather details unavailable for this location.");
 
         state.temp = Math.round(weatherData.current.temperature_2m);
         state.feelsLike = Math.round(weatherData.current.apparent_temperature);
@@ -67,8 +72,9 @@ async function fetchWeather(cityName) {
         state.desc = info.desc;
         state.emoji = info.emoji;
 
-        render();
+        renderWeather();
     } catch (err) {
+        console.error(err);
         showError(err.message);
     }
 }
@@ -87,7 +93,6 @@ const userNameInput = document.getElementById('user-name');
 const saveSettingsBtn = document.getElementById('save-settings');
 
 const greetingTitle = document.getElementById('greeting-title');
-const greetingSubtitle = document.getElementById('greeting-subtitle');
 
 const cityNameEl = document.getElementById('city-name');
 const temperatureEl = document.getElementById('temperature');
@@ -97,9 +102,14 @@ const weatherEmojiEl = document.getElementById('weather-emoji');
 const prefNoteEl = document.getElementById('pref-note');
 
 // Event Listeners
-searchBtn.addEventListener('click', () => fetchWeather(cityInput.value));
+searchBtn.addEventListener('click', () => {
+    fetchWeather(cityInput.value);
+});
+
 cityInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') fetchWeather(cityInput.value);
+    if (e.key === 'Enter') {
+        fetchWeather(cityInput.value);
+    }
 });
 
 settingsToggleBtn.addEventListener('click', () => {
@@ -116,7 +126,7 @@ saveSettingsBtn.addEventListener('click', () => {
 
     updateGreeting();
     settingsBox.classList.add('hidden');
-    if (state.temp !== null) render();
+    if (state.temp !== null) renderWeather();
 });
 
 function updateGreeting() {
@@ -127,7 +137,7 @@ function updateGreeting() {
     }
 }
 
-function render() {
+function renderWeather() {
     errorMessage.classList.add('hidden');
     weatherCard.classList.remove('hidden');
 
@@ -155,5 +165,5 @@ const radio = document.querySelector(`input[name="temp-pref"][value="${state.tem
 if (radio) radio.checked = true;
 updateGreeting();
 
-// Default load
+// Default load on start
 fetchWeather('New York');
