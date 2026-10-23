@@ -91,6 +91,7 @@ function interpretWeatherCode(code) {
 
 // Fetch coordinates for city name from Open-Meteo Geocoding API
 async function fetchCityCoordinates(cityName) {
+    console.log(`Searching coordinates for: ${cityName}`);
     const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`);
     if (!response.ok) throw new Error("Unable to connect to location server.");
     
@@ -109,6 +110,7 @@ async function fetchCityCoordinates(cityName) {
 
 // Fetch current temperature and condition code from Open-Meteo Weather API
 async function fetchWeatherData(lat, lon) {
+    console.log(`Fetching weather for lat: ${lat}, lon: ${lon}`);
     const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code&temperature_unit=fahrenheit`);
     if (!response.ok) throw new Error("Unable to fetch weather details at this time.");
 
@@ -141,6 +143,7 @@ async function handleSearch(cityName) {
 
         renderWeather();
     } catch (err) {
+        console.error("Search Error:", err);
         state.error = err.message;
         renderError();
     } finally {
