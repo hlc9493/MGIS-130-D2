@@ -12,7 +12,8 @@ const state = {
     weatherCode: null,
     description: '',
     emoji: '☀️',
-    error: null
+    error: null,
+    isLoading: false
 };
 
 const STORAGE_KEY = 'pastel_weather_user_prefs';
@@ -123,6 +124,8 @@ async function handleSearch(cityName) {
         clearError();
         if (!cityName.trim()) throw new Error("Please enter a city name.");
 
+        setLoading(true);
+
         const location = await fetchCityCoordinates(cityName);
         state.city = `${location.name}${location.country ? ', ' + location.country : ''}`;
 
@@ -140,6 +143,8 @@ async function handleSearch(cityName) {
     } catch (err) {
         state.error = err.message;
         renderError();
+    } finally {
+        setLoading(false);
     }
 }
 
@@ -168,17 +173,19 @@ const preferenceNoteEl = document.getElementById('preference-note');
 const weatherDescEl = document.getElementById('weather-desc');
 const weatherEmojiEl = document.getElementById('weather-emoji');
 
-// Initialize app preferences on launch
+// Initialize app preferences and load default live weather on launch
 function init() {
     loadSavedPreferences();
     updateHeaderGreeting();
     
-    // Pre-fill form inputs if preferences exist
     if (state.user.name) {
         userNameInput.value = state.user.name;
     }
     const radioToSelect = document.querySelector(`input[name="temp-preference"][value="${state.user.tolerance}"]`);
     if (radioToSelect) radioToSelect.checked = true;
+
+    // Load initial live weather so screen isn't blank
+    handleSearch('New York');
 }
 
 // Event Listeners
@@ -192,7 +199,6 @@ saveSettingsBtn.addEventListener('click', () => {
     updateHeaderGreeting();
     settingsBox.classList.add('hidden');
     
-    // Re-render weather card with updated preference note if visible
     if (state.temperature !== null) {
         renderWeather();
     }
@@ -209,10 +215,21 @@ cityInput.addEventListener('keypress', (e) => {
 function updateHeaderGreeting() {
     if (state.user.name) {
         greetingTitle.textContent = `Hello, ${state.user.name}! 🌤️`;
-        greetingSubtitle.textContent = `Here is your personal weather forecast`;
+        greetingSubtitle.textContent = `Live forecast powered by Open-Meteo`;
     } else {
         greetingTitle.textContent = `Pastel Weather`;
-        greetingSubtitle.textContent = `Search any location to check current conditions`;
+        greetingSubtitle.textContent = `Real-time weather data powered by Open-Meteo`;
+    }
+}
+
+function setLoading(isLoading) {
+    state.isLoading = isLoading;
+    if (isLoading) {
+        searchBtn.textContent = 'Loading...';
+        searchBtn.disabled = true;
+    } else {
+        searchBtn.textContent = 'Search';
+        searchBtn.disabled = false;
     }
 }
 
@@ -226,7 +243,6 @@ function renderWeather() {
     weatherDescEl.textContent = state.description;
     weatherEmojiEl.textContent = state.emoji;
 
-    // Show preference hint
     const note = getComfortCommentary(state.temperature, state.user.tolerance);
     preferenceNoteEl.textContent = note;
 }
