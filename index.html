@@ -3,29 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pastel Weather App</title>
+    <title>Pastel Weather</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="weather-container">
-        <h1>🌤️ Pastel Weather</h1>
-        <div class="search-box">
-            <input type="text" id="city-input" placeholder="Enter city name..." autocomplete="off">
-            <button id="search-btn">Search</button>
-        </div>
-        
-        <div id="error-message" class="error-message hidden"></div>
+    <main class="app-wrapper">
+        <header class="app-header">
+            <span class="app-badge">Forecast</span>
+            <h1>Pastel Weather</h1>
+            <p class="subtitle">Search any location to check current conditions</p>
+        </header>
 
-        <div id="weather-card" class="weather-card hidden">
-            <div class="weather-icon" id="weather-emoji">☀️</div>
-            <h2 id="city-name">--</h2>
-            <div class="temp-display">
-                <span id="temperature">--</span>°F
+        <section class="search-section">
+            <div class="search-box">
+                <input type="text" id="city-input" placeholder="Enter city name (e.g. Paris, Tokyo)..." autocomplete="off" aria-label="City name">
+                <button id="search-btn">Search</button>
             </div>
-            <p class="feels-like">Feels like <span id="apparent-temp">--</span>°F</p>
-            <p id="weather-desc" class="weather-desc">--</p>
-        </div>
-    </div>
+        </section>
+        
+        <div id="error-message" class="error-message hidden" role="alert"></div>
+
+        <section id="weather-card" class="weather-card hidden">
+            <div class="card-header">
+                <h2 id="city-name">--</h2>
+                <span id="weather-desc" class="weather-desc">--</span>
+            </div>
+
+            <div class="card-body">
+                <div class="weather-icon" id="weather-emoji" aria-hidden="true">☀️</div>
+                <div class="temp-wrapper">
+                    <div class="temp-display">
+                        <span id="temperature">--</span><span class="unit">°F</span>
+                    </div>
+                    <p class="feels-like">Feels like <span id="apparent-temp">--</span>°F</p>
+                </div>
+            </div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>
