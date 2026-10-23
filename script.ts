@@ -2,242 +2,158 @@
    1. DATA / STATE
    ========================================== */
 const state = {
-    user: { name: '', tolerance: 'neutral' },
+    userName: localStorage.getItem('weather_name') || '',
+    tempPref: localStorage.getItem('weather_pref') || 'neutral',
     city: '',
-    temperature: null,
-    apparentTemperature: null,
-    weatherCode: null,
-    description: '',
+    temp: null,
+    feelsLike: null,
+    code: null,
+    desc: '',
     emoji: '☀️',
-    error: null,
-    isLoading: false
+    error: null
 };
-
-const STORAGE_KEY = 'pastel_weather_user_prefs';
-
 
 /* ==========================================
    2. BUSINESS / LOGIC RULES
    ========================================== */
-
-function loadSavedPreferences() {
-    try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            state.user.name = parsed.name || '';
-            state.user.tolerance = parsed.tolerance || 'neutral';
-        }
-    } catch (e) {
-        console.warn("Could not read preferences", e);
-    }
-}
-
-function savePreferences(name, tolerance) {
-    state.user.name = name.trim();
-    state.user.tolerance = tolerance;
-    try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state.user));
-    } catch (e) {
-        console.warn("Could not save preferences", e);
-    }
-}
-
-function getComfortCommentary(tempF, tolerance) {
-    if (tolerance === 'cold' && tempF < 60) return "Might feel extra chilly to you! 🧣";
-    if (tolerance === 'cold' && tempF > 75) return "Nice and warm for you! ☀️";
-    if (tolerance === 'hot' && tempF > 75) return "Might feel extra hot for you! 🍦";
-    if (tolerance === 'hot' && tempF < 60) return "Refreshing weather for you! 🍃";
-    return "";
-}
-
-function interpretWeatherCode(code) {
-    const weatherMap = {
+function getWeatherInfo(code) {
+    const map = {
         0: { desc: 'Clear sky', emoji: '☀️' },
         1: { desc: 'Mainly clear', emoji: '🌤️' },
         2: { desc: 'Partly cloudy', emoji: '⛅' },
         3: { desc: 'Overcast', emoji: '☁️' },
         45: { desc: 'Foggy', emoji: '🌫️' },
-        48: { desc: 'Depositing rime fog', emoji: '🌫️' },
         51: { desc: 'Light drizzle', emoji: '🌧️' },
-        53: { desc: 'Moderate drizzle', emoji: '🌧️' },
-        55: { desc: 'Dense drizzle', emoji: '🌧️' },
         61: { desc: 'Slight rain', emoji: '🌦️' },
         63: { desc: 'Moderate rain', emoji: '🌧️' },
-        65: { desc: 'Heavy rain', emoji: '🌧️' },
-        71: { desc: 'Slight snow fall', emoji: '🌨️' },
-        73: { desc: 'Moderate snow fall', emoji: '❄️' },
-        75: { desc: 'Heavy snow fall', emoji: '❄️' },
-        80: { desc: 'Slight rain showers', emoji: '🌦️' },
-        81: { desc: 'Moderate rain showers', emoji: '🌧️' },
-        82: { desc: 'Violent rain showers', emoji: '⛈️' },
-        95: { desc: 'Thunderstorm', emoji: '⚡' },
-        96: { desc: 'Thunderstorm with hail', emoji: '🌩️' },
-        99: { desc: 'Heavy thunderstorm', emoji: '🌩️' }
+        71: { desc: 'Snow fall', emoji: '❄️' },
+        95: { desc: 'Thunderstorm', emoji: '⚡' }
     };
-    return weatherMap[code] || { desc: 'Unknown conditions', emoji: '🌈' };
+    return map[code] || { desc: 'Clear conditions', emoji: '🌈' };
 }
 
-async function fetchCityCoordinates(cityName) {
-    const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`);
-    if (!response.ok) throw new Error("Unable to connect to location server.");
-    
-    const data = await response.json();
-    if (!data.results || data.results.length === 0) {
-        throw new Error("City not found. Please check your spelling and try again.");
-    }
-    
-    return {
-        name: data.results[0].name,
-        country: data.results[0].country || '',
-        latitude: data.results[0].latitude,
-        longitude: data.results[0].longitude
-    };
+function getComfortMessage(temp, pref) {
+    if (pref === 'cold' && temp < 60) return "Might feel chilly to you! 🧣";
+    if (pref === 'hot' && temp > 75) return "Might feel warm to you! 🍦";
+    return "";
 }
 
-async function fetchWeatherData(lat, lon) {
-    const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code&temperature_unit=fahrenheit`);
-    if (!response.ok) throw new Error("Unable to fetch weather details at this time.");
-
-    const data = await response.json();
-    if (!data.current) throw new Error("Weather data for this location is unavailable.");
-    
-    return data.current;
-}
-
-async function handleSearch(cityName) {
+async function fetchWeather(cityName) {
     try {
-        clearError();
-        if (!cityName || !cityName.trim()) throw new Error("Please enter a city name.");
+        showError(null);
+        if (!cityName.trim()) throw new Error("Please enter a city name.");
 
-        setLoading(true);
+        // 1. Geocoding
+        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`);
+        const geoData = await geoRes.json();
+        
+        if (!geoData.results || geoData.results.length === 0) {
+            throw new Error("City not found. Check your spelling.");
+        }
 
-        const location = await fetchCityCoordinates(cityName);
-        state.city = `${location.name}${location.country ? ', ' + location.country : ''}`;
+        const loc = geoData.results[0];
+        state.city = `${loc.name}, ${loc.country || ''}`;
 
-        const current = await fetchWeatherData(location.latitude, location.longitude);
-        state.temperature = Math.round(current.temperature_2m);
-        state.apparentTemperature = Math.round(current.apparent_temperature);
-        state.weatherCode = current.weather_code;
+        // 2. Weather
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,apparent_temperature,weather_code&temperature_unit=fahrenheit`);
+        const weatherData = await weatherRes.json();
 
-        const weatherDetails = interpretWeatherCode(state.weatherCode);
-        state.description = weatherDetails.desc;
-        state.emoji = weatherDetails.emoji;
-        state.error = null;
+        if (!weatherData.current) throw new Error("Could not retrieve weather data.");
 
-        renderWeather();
+        state.temp = Math.round(weatherData.current.temperature_2m);
+        state.feelsLike = Math.round(weatherData.current.apparent_temperature);
+        
+        const info = getWeatherInfo(weatherData.current.weather_code);
+        state.desc = info.desc;
+        state.emoji = info.emoji;
+
+        render();
     } catch (err) {
-        state.error = err.message;
-        renderError();
-    } finally {
-        setLoading(false);
+        showError(err.message);
     }
 }
-
 
 /* ==========================================
    3. DISPLAY / UI CONTROLLERS
    ========================================== */
+const cityInput = document.getElementById('city-input');
+const searchBtn = document.getElementById('search-btn');
+const weatherCard = document.getElementById('weather-card');
+const errorMessage = document.getElementById('error-message');
 
 const settingsToggleBtn = document.getElementById('settings-toggle-btn');
 const settingsBox = document.getElementById('settings-box');
-const userNameInput = document.getElementById('user-name-input');
-const saveSettingsBtn = document.getElementById('save-settings-btn');
+const userNameInput = document.getElementById('user-name');
+const saveSettingsBtn = document.getElementById('save-settings');
 
 const greetingTitle = document.getElementById('greeting-title');
 const greetingSubtitle = document.getElementById('greeting-subtitle');
 
-const searchBtn = document.getElementById('search-btn');
-const cityInput = document.getElementById('city-input');
-const weatherCard = document.getElementById('weather-card');
-const errorMessage = document.getElementById('error-message');
-
 const cityNameEl = document.getElementById('city-name');
 const temperatureEl = document.getElementById('temperature');
 const apparentTempEl = document.getElementById('apparent-temp');
-const preferenceNoteEl = document.getElementById('preference-note');
 const weatherDescEl = document.getElementById('weather-desc');
 const weatherEmojiEl = document.getElementById('weather-emoji');
+const prefNoteEl = document.getElementById('pref-note');
 
 // Event Listeners
-if (settingsToggleBtn) {
-    settingsToggleBtn.addEventListener('click', () => {
-        settingsBox.classList.toggle('hidden');
-    });
-}
+searchBtn.addEventListener('click', () => fetchWeather(cityInput.value));
+cityInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') fetchWeather(cityInput.value);
+});
 
-if (saveSettingsBtn) {
-    saveSettingsBtn.addEventListener('click', () => {
-        const selectedTolerance = document.querySelector('input[name="temp-preference"]:checked')?.value || 'neutral';
-        savePreferences(userNameInput.value, selectedTolerance);
-        updateHeaderGreeting();
-        settingsBox.classList.add('hidden');
-        if (state.temperature !== null) renderWeather();
-    });
-}
+settingsToggleBtn.addEventListener('click', () => {
+    settingsBox.classList.toggle('hidden');
+});
 
-if (searchBtn && cityInput) {
-    searchBtn.addEventListener('click', () => {
-        handleSearch(cityInput.value);
-    });
+saveSettingsBtn.addEventListener('click', () => {
+    state.userName = userNameInput.value.trim();
+    const selectedRadio = document.querySelector('input[name="temp-pref"]:checked');
+    if (selectedRadio) state.tempPref = selectedRadio.value;
 
-    cityInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            handleSearch(cityInput.value);
-        }
-    });
-}
+    localStorage.setItem('weather_name', state.userName);
+    localStorage.setItem('weather_pref', state.tempPref);
 
-function updateHeaderGreeting() {
-    if (state.user.name) {
-        greetingTitle.textContent = `Hello, ${state.user.name}! 🌤️`;
-        greetingSubtitle.textContent = `Live forecast powered by Open-Meteo`;
+    updateGreeting();
+    settingsBox.classList.add('hidden');
+    if (state.temp !== null) render();
+});
+
+function updateGreeting() {
+    if (state.userName) {
+        greetingTitle.textContent = `Hello, ${state.userName}! 🌤️`;
     } else {
         greetingTitle.textContent = `Pastel Weather`;
-        greetingSubtitle.textContent = `Real-time weather data powered by Open-Meteo`;
     }
 }
 
-function setLoading(isLoading) {
-    state.isLoading = isLoading;
-    if (searchBtn) {
-        searchBtn.textContent = isLoading ? 'Loading...' : 'Search';
-        searchBtn.disabled = isLoading;
-    }
-}
-
-function renderWeather() {
+function render() {
     errorMessage.classList.add('hidden');
     weatherCard.classList.remove('hidden');
 
     cityNameEl.textContent = state.city;
-    temperatureEl.textContent = state.temperature;
-    apparentTempEl.textContent = state.apparentTemperature;
-    weatherDescEl.textContent = state.description;
+    temperatureEl.textContent = state.temp;
+    apparentTempEl.textContent = state.feelsLike;
+    weatherDescEl.textContent = state.desc;
     weatherEmojiEl.textContent = state.emoji;
-    preferenceNoteEl.textContent = getComfortCommentary(state.temperature, state.user.tolerance);
+    prefNoteEl.textContent = getComfortMessage(state.temp, state.tempPref);
 }
 
-function renderError() {
-    weatherCard.classList.add('hidden');
-    errorMessage.textContent = state.error;
-    errorMessage.classList.remove('hidden');
+function showError(msg) {
+    if (msg) {
+        weatherCard.classList.add('hidden');
+        errorMessage.textContent = msg;
+        errorMessage.classList.remove('hidden');
+    } else {
+        errorMessage.classList.add('hidden');
+    }
 }
 
-function clearError() {
-    state.error = null;
-    errorMessage.classList.add('hidden');
-}
+// Initial Setup on Load
+if (state.userName) userNameInput.value = state.userName;
+const radio = document.querySelector(`input[name="temp-pref"][value="${state.tempPref}"]`);
+if (radio) radio.checked = true;
+updateGreeting();
 
-// Startup Initialization
-loadSavedPreferences();
-updateHeaderGreeting();
-
-if (userNameInput && state.user.name) {
-    userNameInput.value = state.user.name;
-}
-const radioToSelect = document.querySelector(`input[name="temp-preference"][value="${state.user.tolerance}"]`);
-if (radioToSelect) radioToSelect.checked = true;
-
-// Default initial fetch on load
-handleSearch('New York');
+// Default load
+fetchWeather('New York');
