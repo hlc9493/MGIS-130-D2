@@ -3,106 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feels Like You: Weather Dashboard</title>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Outfit -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Custom Styles -->
+    <title>Pastel Weather App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div class="app-container">
+    <div class="weather-container">
+        <h1>🌤️ Pastel Weather</h1>
+        <div class="search-box">
+            <input type="text" id="city-input" placeholder="Enter city name..." autocomplete="off">
+            <button id="search-btn">Search</button>
+        </div>
         
-        <!-- Header -->
-        <header class="app-header">
-            <h1 class="app-title">
-                <i class="fa-solid fa-cloud-sun-rain"></i>
-                Feels Like You
-            </h1>
-            <p class="app-subtitle">Clean & pleasant weather forecast dashboard</p>
-        </header>
+        <div id="error-message" class="error-message hidden"></div>
 
-        <!-- Search Form -->
-        <section aria-label="City Search">
-            <form id="search-form" class="search-box">
-                <i class="fa-solid fa-location-dot search-icon"></i>
-                <input 
-                    type="text" 
-                    id="city-input" 
-                    class="search-input" 
-                    placeholder="Enter city name (e.g. Paris)..." 
-                    required 
-                    autocomplete="off"
-                />
-                <button type="submit" id="search-btn" class="search-button" aria-label="Search weather">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-            </form>
-        </section>
-
-        <!-- Popular City Suggestions -->
-        <div class="suggestions">
-            <span class="suggestion-title">Popular Cities:</span>
-            <button class="pill-btn" onclick="fetchWeatherForCity('Tokyo')">Tokyo</button>
-            <button class="pill-btn" onclick="fetchWeatherForCity('New York')">New York</button>
-            <button class="pill-btn" onclick="fetchWeatherForCity('London')">London</button>
-            <button class="pill-btn" onclick="fetchWeatherForCity('Sydney')">Sydney</button>
-        </div>
-
-        <!-- Main Display: Weather Card -->
-        <main id="weather-card" class="weather-card" style="display: none;">
-            <h2 id="display-city" class="city-name">--</h2>
-            <div id="display-country" class="country-label">--</div>
-
-            <div id="display-emoji" class="weather-emoji">☀️</div>
-            <div id="display-desc" class="weather-desc">Clear Sky</div>
-
-            <div id="display-temp" class="temp-main">--°F</div>
-            <div class="temp-feels-like">
-                Feels like <span id="display-feels">--°F</span>
+        <div id="weather-card" class="weather-card hidden">
+            <div class="weather-icon" id="weather-emoji">☀️</div>
+            <h2 id="city-name">--</h2>
+            <div class="temp-display">
+                <span id="temperature">--</span>°F
             </div>
-
-            <div class="weather-details">
-                <div class="detail-chip">
-                    <i class="fa-solid fa-wind"></i>
-                    <span class="label">Wind Speed</span>
-                    <span id="display-wind" class="value">-- mph</span>
-                </div>
-                <div class="detail-chip">
-                    <i class="fa-solid fa-compass"></i>
-                    <span class="label">Coordinates</span>
-                    <span id="display-coords" class="value">--</span>
-                </div>
-            </div>
-        </main>
-
-        <!-- Loading State View -->
-        <div id="loading-state" class="state-container">
-            <div class="spinner"></div>
-            <p style="font-weight: 500; color: var(--text-secondary);">Fetching latest forecast...</p>
+            <p class="feels-like">Feels like <span id="apparent-temp">--</span>°F</p>
+            <p id="weather-desc" class="weather-desc">--</p>
         </div>
-
-        <!-- Error State View -->
-        <div id="error-state" class="state-container error-card">
-            <i class="fa-solid fa-cloud-bounce"></i>
-            <div class="error-title">City Not Found</div>
-            <div id="error-message" class="error-msg">
-                We couldn't find weather data for that location. Please check the spelling and try again.
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <footer class="app-footer">
-            Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo API</a> • No API key required
-        </footer>
-
     </div>
 
-    <!-- Application Script -->
     <script src="script.js"></script>
 </body>
 </html>
