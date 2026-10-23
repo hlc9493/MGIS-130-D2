@@ -1,15 +1,9 @@
-// Ensure the DOM is fully loaded before running any code
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Pastel Weather App loaded successfully!");
-
     /* ==========================================
        1. DATA / STATE
        ========================================== */
     const state = {
-        user: {
-            name: '',
-            tolerance: 'neutral' // 'cold', 'neutral', or 'hot'
-        },
+        user: { name: '', tolerance: 'neutral' },
         city: '',
         temperature: null,
         apparentTemperature: null,
@@ -22,11 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const STORAGE_KEY = 'pastel_weather_user_prefs';
 
-
     /* ==========================================
        2. BUSINESS / LOGIC RULES
        ========================================== */
-
     function loadSavedPreferences() {
         try {
             const saved = localStorage.getItem(STORAGE_KEY);
@@ -36,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.user.tolerance = parsed.tolerance || 'neutral';
             }
         } catch (e) {
-            console.warn("Could not read preferences from localStorage", e);
+            console.warn("Could not read preferences", e);
         }
     }
 
@@ -46,18 +38,15 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state.user));
         } catch (e) {
-            console.warn("Could not save preferences to localStorage", e);
+            console.warn("Could not save preferences", e);
         }
     }
 
     function getComfortCommentary(tempF, tolerance) {
-        if (tolerance === 'cold') {
-            if (tempF < 60) return "Might feel extra chilly to you! 🧣";
-            if (tempF > 75) return "Nice and warm for you! ☀️";
-        } else if (tolerance === 'hot') {
-            if (tempF > 75) return "Might feel extra hot for you! 🍦";
-            if (tempF < 60) return "Refreshing weather for you! 🍃";
-        }
+        if (tolerance === 'cold' && tempF < 60) return "Might feel extra chilly to you! 🧣";
+        if (tolerance === 'cold' && tempF > 75) return "Nice and warm for you! ☀️";
+        if (tolerance === 'hot' && tempF > 75) return "Might feel extra hot for you! 🍦";
+        if (tolerance === 'hot' && tempF < 60) return "Refreshing weather for you! 🍃";
         return "";
     }
 
@@ -85,12 +74,10 @@ document.addEventListener('DOMContentLoaded', () => {
             96: { desc: 'Thunderstorm with hail', emoji: '🌩️' },
             99: { desc: 'Heavy thunderstorm', emoji: '🌩️' }
         };
-
         return weatherMap[code] || { desc: 'Unknown conditions', emoji: '🌈' };
     }
 
     async function fetchCityCoordinates(cityName) {
-        console.log(`Searching coordinates for: ${cityName}`);
         const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`);
         if (!response.ok) throw new Error("Unable to connect to location server.");
         
@@ -108,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchWeatherData(lat, lon) {
-        console.log(`Fetching weather for lat: ${lat}, lon: ${lon}`);
         const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code&temperature_unit=fahrenheit`);
         if (!response.ok) throw new Error("Unable to fetch weather details at this time.");
 
@@ -121,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function handleSearch(cityName) {
         try {
             clearError();
-            if (!cityName.trim()) throw new Error("Please enter a city name.");
+            if (!cityName || !cityName.trim()) throw new Error("Please enter a city name.");
 
             setLoading(true);
 
@@ -140,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             renderWeather();
         } catch (err) {
-            console.error("Search Error:", err);
             state.error = err.message;
             renderError();
         } finally {
@@ -148,11 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
     /* ==========================================
        3. DISPLAY / UI CONTROLLERS
        ========================================== */
-
     const settingsToggleBtn = document.getElementById('settings-toggle-btn');
     const settingsBox = document.getElementById('settings-box');
     const userNameInput = document.getElementById('user-name-input');
@@ -173,7 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const weatherDescEl = document.getElementById('weather-desc');
     const weatherEmojiEl = document.getElementById('weather-emoji');
 
-    // Event Listeners
     if (settingsToggleBtn) {
         settingsToggleBtn.addEventListener('click', () => {
             settingsBox.classList.toggle('hidden');
@@ -186,10 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
             savePreferences(userNameInput.value, selectedTolerance);
             updateHeaderGreeting();
             settingsBox.classList.add('hidden');
-            
-            if (state.temperature !== null) {
-                renderWeather();
-            }
+            if (state.temperature !== null) renderWeather();
         });
     }
 
@@ -199,7 +178,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         cityInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleSearch(cityInput.value);
+            if (e.key === 'Enter') {
+                handleSearch(cityInput.value);
+            }
         });
     }
 
@@ -222,34 +203,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderWeather() {
-        if (errorMessage) errorMessage.classList.add('hidden');
-        if (weatherCard) weatherCard.classList.remove('hidden');
+        errorMessage.classList.add('hidden');
+        weatherCard.classList.remove('hidden');
 
-        if (cityNameEl) cityNameEl.textContent = state.city;
-        if (temperatureEl) temperatureEl.textContent = state.temperature;
-        if (apparentTempEl) apparentTempEl.textContent = state.apparentTemperature;
-        if (weatherDescEl) weatherDescEl.textContent = state.description;
-        if (weatherEmojiEl) weatherEmojiEl.textContent = state.emoji;
-
-        if (preferenceNoteEl) {
-            preferenceNoteEl.textContent = getComfortCommentary(state.temperature, state.user.tolerance);
-        }
+        cityNameEl.textContent = state.city;
+        temperatureEl.textContent = state.temperature;
+        apparentTempEl.textContent = state.apparentTemperature;
+        weatherDescEl.textContent = state.description;
+        weatherEmojiEl.textContent = state.emoji;
+        preferenceNoteEl.textContent = getComfortCommentary(state.temperature, state.user.tolerance);
     }
 
     function renderError() {
-        if (weatherCard) weatherCard.classList.add('hidden');
-        if (errorMessage) {
-            errorMessage.textContent = state.error;
-            errorMessage.classList.remove('hidden');
-        }
+        weatherCard.classList.add('hidden');
+        errorMessage.textContent = state.error;
+        errorMessage.classList.remove('hidden');
     }
 
     function clearError() {
         state.error = null;
-        if (errorMessage) errorMessage.classList.add('hidden');
+        errorMessage.classList.add('hidden');
     }
 
-    // Initialize
+    // Startup initialization
     loadSavedPreferences();
     updateHeaderGreeting();
     
@@ -259,6 +235,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const radioToSelect = document.querySelector(`input[name="temp-preference"][value="${state.user.tolerance}"]`);
     if (radioToSelect) radioToSelect.checked = true;
 
-    // Load initial weather
+    // Default initial fetch
     handleSearch('New York');
 });
