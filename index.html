@@ -14,14 +14,10 @@
             <p class="subtitle" id="greeting-subtitle">Real-time weather data powered by Open-Meteo</p>
         </header>
 
-        <!-- Settings Drawer Toggle Button -->
         <div class="settings-toggle-container">
-            <button id="settings-toggle-btn" class="secondary-btn" type="button">
-                ⚙️ Preferences
-            </button>
+            <button id="settings-toggle-btn" class="secondary-btn" type="button">⚙️ Preferences</button>
         </div>
 
-        <!-- Settings Box -->
         <section id="settings-box" class="settings-box hidden">
             <h3>User Preferences</h3>
             <div class="form-group">
@@ -48,17 +44,15 @@
             <button id="save-settings-btn" type="button">Save Preferences</button>
         </section>
 
-        <!-- Search Controls -->
         <section class="search-section">
             <div class="search-box">
-                <input type="text" id="city-input" placeholder="Enter city name (e.g. London, Tokyo)..." autocomplete="off" aria-label="City name">
-                <button id="search-btn">Search</button>
+                <input type="text" id="city-input" placeholder="Enter city name (e.g. London, Tokyo)..." autocomplete="off">
+                <button id="search-btn" type="button">Search</button>
             </div>
         </section>
         
         <div id="error-message" class="error-message hidden" role="alert"></div>
 
-        <!-- Weather Display Card -->
         <section id="weather-card" class="weather-card hidden">
             <div class="card-header">
                 <h2 id="city-name">--</h2>
