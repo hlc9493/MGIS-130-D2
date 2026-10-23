@@ -3,74 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pastel Weather</title>
+    <title>Pastel Weather App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <main class="app-wrapper">
+    <div class="app-wrapper">
         <header class="app-header">
-            <span class="app-badge">Live Forecast</span>
-            <h1 id="greeting-title">Pastel Weather</h1>
-            <p class="subtitle" id="greeting-subtitle">Real-time weather data powered by Open-Meteo</p>
+            <h1>Pastel Weather</h1>
+            <p>Live Weather Forecast</p>
         </header>
 
-        <div class="settings-toggle-container">
-            <button id="settings-toggle-btn" class="secondary-btn" type="button">⚙️ Preferences</button>
+        <div class="search-box">
+            <input type="text" id="city-input" placeholder="Enter city (e.g. London)..." autocomplete="off">
+            <button id="search-btn" type="button">Search</button>
         </div>
 
-        <section id="settings-box" class="settings-box hidden">
-            <h3>User Preferences</h3>
-            <div class="form-group">
-                <label for="user-name-input">Your Name</label>
-                <input type="text" id="user-name-input" placeholder="Enter your name..." autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label>Do you usually run...</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="temp-preference" value="cold">
-                        <span>❄️ Cold</span>
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="temp-preference" value="neutral" checked>
-                        <span>😊 Neutral</span>
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="temp-preference" value="hot">
-                        <span>🔥 Hot</span>
-                    </label>
+        <div id="weather-card" class="weather-card">
+            <h2 id="city-name">Ready</h2>
+            <div class="weather-main">
+                <span id="weather-emoji" class="emoji">🌤️</span>
+                <div class="temp-container">
+                    <span id="temperature">--</span>°F
                 </div>
             </div>
-            <button id="save-settings-btn" type="button">Save Preferences</button>
-        </section>
-
-        <section class="search-section">
-            <div class="search-box">
-                <input type="text" id="city-input" placeholder="Enter city name (e.g. London, Tokyo)..." autocomplete="off">
-                <button id="search-btn" type="button">Search</button>
-            </div>
-        </section>
-        
-        <div id="error-message" class="error-message hidden" role="alert"></div>
-
-        <section id="weather-card" class="weather-card hidden">
-            <div class="card-header">
-                <h2 id="city-name">--</h2>
-                <span id="weather-desc" class="weather-desc">--</span>
-            </div>
-
-            <div class="card-body">
-                <div class="weather-icon" id="weather-emoji" aria-hidden="true">☀️</div>
-                <div class="temp-wrapper">
-                    <div class="temp-display">
-                        <span id="temperature">--</span><span class="unit">°F</span>
-                    </div>
-                    <p class="feels-like">Feels like <span id="apparent-temp">--</span>°F</p>
-                    <p id="preference-note" class="preference-note"></p>
-                </div>
-            </div>
-        </section>
-    </main>
+            <p class="feels">Feels like <span id="apparent-temp">--</span>°F</p>
+            <p id="weather-desc" class="desc">Type a city and click Search</p>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
