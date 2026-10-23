@@ -1,122 +1,124 @@
-/* ===== USER INTERFACE LAYER (styling) ===== */
-
-/* Color scheme: kept in one place so it stays consistent */
-:root {
-  --bg: #f4f6f9;
-  --card: #ffffff;
-  --text: #1f2933;
-  --muted: #616e7c;
-  --accent: #2563eb;
-  --accent-dark: #1d4ed8;
-  --border: #e4e7eb;
-  --error: #b91c1c;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
-
-* { box-sizing: border-box; }
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.5;
+    background: linear-gradient(135deg, #fce4ec, #e3f2fd);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    color: #4a4a4a;
 }
 
-.container {
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 32px 16px;
+.weather-container {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 380px;
+    text-align: center;
 }
 
-header { text-align: center; margin-bottom: 24px; }
-h1 { margin: 0; font-size: 1.75rem; }
-.subtitle { margin: 4px 0 0; color: var(--muted); }
-
-/* Search form */
-.search { display: flex; gap: 8px; }
-
-.search input {
-  flex: 1;
-  padding: 12px 14px;
-  font-size: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #5c6bc0;
 }
 
-.search input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+.search-box {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    outline: none;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+input[type="text"]:focus {
+    border-color: #9fa8da;
+}
 
 button {
-  font: inherit;
-  cursor: pointer;
-  border: none;
-  border-radius: 8px;
+    padding: 0.75rem 1.25rem;
+    background-color: #9fa8da;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
 }
 
-.search button {
-  padding: 12px 18px;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 600;
+button:hover {
+    background-color: #7986cb;
 }
 
-.search button:hover { background: var(--accent-dark); }
-
-/* °F / °C toggle */
-.unit-toggle { display: flex; justify-content: center; gap: 4px; margin: 16px 0; }
-
-.unit-toggle button {
-  padding: 6px 14px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--muted);
+.hidden {
+    display: none !important;
 }
 
-.unit-toggle button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-/* Status messages */
-.status { text-align: center; min-height: 1.5em; color: var(--muted); margin: 0 0 12px; }
-.status.error { color: var(--error); }
-
-/* Results card */
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 0.75rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
 }
 
-.hidden { display: none; }
-
-.card-top { display: flex; justify-content: space-between; align-items: flex-start; }
-.card-top h2 { margin: 0; font-size: 1.35rem; }
-.description { margin: 2px 0 0; color: var(--muted); }
-.icon { font-size: 3rem; line-height: 1; }
-
-.temperature { font-size: 3.5rem; font-weight: 700; margin: 12px 0 20px; }
-
-.details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin: 0;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
+.weather-card {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    animation: fadeIn 0.4s ease;
 }
 
-.details dt { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
-.details dd { margin: 0; font-weight: 600; }
-
-footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 24px; }
-
-/* Hides labels visually but keeps them for screen readers */
-.visually-hidden {
-  position: absolute; width: 1px; height: 1px;
-  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+.weather-icon {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
 }
 
-/* Small phones: stack the search button under the input */
-@media (max-width: 380px) {
-  .search { flex-direction: column; }
-  .temperature { font-size: 3rem; }
+.weather-card h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #3f51b5;
+}
+
+.temp-display {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.feels-like {
+    font-size: 0.9rem;
+    color: #757575;
+    margin-bottom: 0.75rem;
+}
+
+.weather-desc {
+    font-size: 1.1rem;
+    color: #5c6bc0;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
