@@ -29,15 +29,15 @@ resizeCanvas();
 function initParticles(type) {
     particles = [];
     currentWeatherType = type;
-    const count = type === 'rain' ? 120 : type === 'snow' ? 80 : type === 'thunder' ? 150 : 25;
+    const count = type === 'rain' ? 100 : type === 'snow' ? 70 : type === 'thunder' ? 130 : 20;
 
     for (let i = 0; i < count; i++) {
         particles.push({
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            speedY: type === 'rain' || type === 'thunder' ? 12 + Math.random() * 8 : type === 'snow' ? 1 + Math.random() * 2 : 0.3 + Math.random() * 0.5,
-            speedX: type === 'snow' ? Math.sin(i) * 1 : type === 'clear' ? 0.5 + Math.random() * 0.5 : 0,
-            size: type === 'snow' ? Math.random() * 4 + 2 : type === 'clear' ? Math.random() * 40 + 20 : Math.random() * 2 + 1
+            speedY: type === 'rain' || type === 'thunder' ? 10 + Math.random() * 6 : type === 'snow' ? 1 + Math.random() * 2 : 0.2 + Math.random() * 0.4,
+            speedX: type === 'snow' ? Math.sin(i) * 1 : type === 'clear' ? 0.4 + Math.random() * 0.4 : 0,
+            size: type === 'snow' ? Math.random() * 4 + 2 : type === 'clear' ? Math.random() * 30 + 15 : Math.random() * 2 + 1
         });
     }
 }
@@ -46,37 +46,37 @@ function animateBackground() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (currentWeatherType === 'clear') {
-        ctx.fillStyle = '#87CEEB';
+        ctx.fillStyle = '#1e2030';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fillStyle = 'rgba(255, 204, 0, 0.25)';
         particles.forEach(p => {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fill();
             p.x += p.speedX;
-            if (p.x > canvas.width + 50) p.x = -50;
+            if (p.x > canvas.width + 40) p.x = -40;
         });
     } else if (currentWeatherType === 'rain' || currentWeatherType === 'thunder') {
-        ctx.fillStyle = currentWeatherType === 'thunder' ? '#1a1c2e' : '#2c3e50';
+        ctx.fillStyle = currentWeatherType === 'thunder' ? '#11121e' : '#1b2631';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        ctx.strokeStyle = '#a4b0be';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#85d7ff';
+        ctx.lineWidth = 1.5;
         particles.forEach(p => {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p.x, p.y + p.size * 5);
+            ctx.lineTo(p.x, p.y + p.size * 4);
             ctx.stroke();
             p.y += p.speedY;
             if (p.y > canvas.height) p.y = -10;
         });
 
         if (currentWeatherType === 'thunder' && Math.random() < 0.02) {
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
     } else if (currentWeatherType === 'snow') {
-        ctx.fillStyle = '#2b3a4a';
+        ctx.fillStyle = '#182533';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#ffffff';
         particles.forEach(p => {
@@ -114,11 +114,9 @@ function getPokemonData(code) {
 }
 
 function getTrainerAdvice(temp, pref) {
-    let advice = "";
-    if (pref === 'cold' && temp < 60) advice = "TRAINER ADVICE: WEAR A HEAVY JACKET!";
-    else if (pref === 'hot' && temp > 75) advice = "TRAINER ADVICE: STAY HYDRATED WITH FRESH WATER!";
-    else advice = "TRAINER ADVICE: GREAT CONDITIONS FOR WILD ENCOUNTERS!";
-    return advice;
+    if (pref === 'cold' && temp < 60) return "TRAINER ADVICE: WEAR A HEAVY COAT!";
+    if (pref === 'hot' && temp > 75) return "TRAINER ADVICE: BRING FRESH WATER!";
+    return "TRAINER ADVICE: GREAT CONDITIONS FOR WILD ENCOUNTERS!";
 }
 
 /* ==========================================
@@ -246,4 +244,4 @@ const radio = document.querySelector(`input[name="temp-preference"][value="${sta
 if (radio) radio.checked = true;
 
 updateGreeting();
-fetchWeather('Pallet Town');
+fetchWeather('New York');
