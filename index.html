@@ -4,33 +4,234 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pastel Weather App</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- Tailwind CSS CDN for gorgeous responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="app-wrapper">
-        <header class="app-header">
-            <h1>Pastel Weather</h1>
-            <p>Live Weather Forecast</p>
+<body class="bg-gradient-to-br from-pink-100 via-indigo-50 to-blue-100 min-h-screen flex items-center justify-center p-4 text-slate-700">
+
+    <main class="w-full max-w-md bg-white/85 backdrop-blur-md p-6 sm:p-8 rounded-3xl shadow-xl border border-white/80">
+        
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <span class="inline-block px-3 py-1 bg-indigo-100 text-indigo-600 text-xs font-bold uppercase tracking-wider rounded-full mb-2">Live Forecast</span>
+            <h1 id="greeting-title" class="text-2xl font-bold text-indigo-600 mb-1">Pastel Weather</h1>
+            <p class="text-sm text-slate-400">Real-time weather powered by Open-Meteo</p>
         </header>
 
-        <div class="search-box">
-            <input type="text" id="city-input" placeholder="Enter city (e.g. London)..." autocomplete="off">
-            <button id="search-btn" type="button">Search</button>
+        <!-- Preferences Toggle Button -->
+        <div class="flex justify-end mb-4">
+            <button id="toggle-settings" type="button" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-semibold px-3 py-1.5 rounded-lg transition">
+                ⚙️ Preferences
+            </button>
         </div>
 
-        <div id="weather-card" class="weather-card">
-            <h2 id="city-name">Ready</h2>
-            <div class="weather-main">
-                <span id="weather-emoji" class="emoji">🌤️</span>
-                <div class="temp-container">
-                    <span id="temperature">--</span>°F
+        <!-- Settings Drawer -->
+        <section id="settings-box" class="hidden bg-slate-50 border border-slate-200 p-4 rounded-2xl mb-4 shadow-inner">
+            <h3 class="text-sm font-bold text-indigo-600 mb-3">User Preferences</h3>
+            <div class="mb-3">
+                <label class="block text-xs font-semibold text-slate-500 mb-1" for="input-name">Your Name</label>
+                <input type="text" id="input-name" placeholder="Enter your name..." class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white">
+            </div>
+            <div class="mb-3">
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Temperature Comfort</label>
+                <div class="flex gap-2 text-xs">
+                    <label class="flex-1 flex items-center justify-center gap-1 p-2 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-indigo-50">
+                        <input type="radio" name="temp-pref" value="cold"> Cold 🧣
+                    </label>
+                    <label class="flex-1 flex items-center justify-center gap-1 p-2 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-indigo-50">
+                        <input type="radio" name="temp-pref" value="neutral" checked> Neutral 😊
+                    </label>
+                    <label class="flex-1 flex items-center justify-center gap-1 p-2 bg-white border border-slate-200 rounded-xl cursor-pointer hover:bg-indigo-50">
+                        <input type="radio" name="temp-pref" value="hot"> Hot 🔥
+                    </label>
                 </div>
             </div>
-            <p class="feels">Feels like <span id="apparent-temp">--</span>°F</p>
-            <p id="weather-desc" class="desc">Type a city and click Search</p>
-        </div>
-    </div>
+            <button id="save-settings" type="button" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white text-xs font-semibold py-2 rounded-xl transition">
+                Save Preferences
+            </button>
+        </section>
 
-    <script src="script.js"></script>
+        <!-- Search Bar -->
+        <div class="flex gap-2 mb-4">
+            <input type="text" id="city-input" placeholder="Enter city (e.g. London, Tokyo)..." autocomplete="off" class="flex-1 px-4 py-3 border-2 border-slate-200 rounded-2xl focus:outline-none focus:border-indigo-300 text-sm bg-white">
+            <button id="search-btn" type="button" class="bg-indigo-400 hover:bg-indigo-500 text-white font-semibold px-5 py-3 rounded-2xl text-sm transition shadow-md shadow-indigo-100">
+                Search
+            </button>
+        </div>
+
+        <!-- Error Message Box -->
+        <div id="error-box" class="hidden bg-rose-50 border border-rose-200 text-rose-600 text-xs p-3 rounded-2xl text-center mb-4"></div>
+
+        <!-- Weather Display Card -->
+        <section id="weather-card" class="bg-gradient-to-b from-white to-slate-50 border border-indigo-50 rounded-2xl p-5 shadow-sm">
+            <div class="text-center pb-3 border-b border-slate-100 mb-4">
+                <h2 id="city-name" class="text-lg font-bold text-slate-800">Loading...</h2>
+                <span id="weather-desc" class="text-xs font-semibold text-indigo-500 uppercase tracking-wide">--</span>
+            </div>
+
+            <div class="flex items-center justify-center gap-4">
+                <div id="weather-emoji" class="text-5xl drop-shadow-sm">🌤️</div>
+                <div>
+                    <div class="text-4xl font-extrabold text-slate-800">
+                        <span id="temperature">--</span><span class="text-lg font-medium text-slate-400 ml-0.5">°F</span>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1">Feels like <span id="apparent-temp">--</span>°F</p>
+                </div>
+            </div>
+            <p id="pref-note" class="text-center text-xs text-indigo-400 italic mt-3"></p>
+        </section>
+
+    </main>
+
+    <!-- Inline JavaScript for zero-friction loading -->
+    <script>
+        const state = {
+            userName: localStorage.getItem('weather_name') || '',
+            tempPref: localStorage.getItem('weather_pref') || 'neutral',
+            city: '',
+            temp: null,
+            feelsLike: null,
+            desc: '',
+            emoji: '🌤️'
+        };
+
+        // DOM Elements
+        const cityInput = document.getElementById('city-input');
+        const searchBtn = document.getElementById('search-btn');
+        const weatherCard = document.getElementById('weather-card');
+        const errorBox = document.getElementById('error-box');
+        const toggleSettingsBtn = document.getElementById('toggle-settings');
+        const settingsBox = document.getElementById('settings-box');
+        const saveSettingsBtn = document.getElementById('save-settings');
+        const inputName = document.getElementById('input-name');
+        const greetingTitle = document.getElementById('greeting-title');
+
+        const cityNameEl = document.getElementById('city-name');
+        const temperatureEl = document.getElementById('temperature');
+        const apparentTempEl = document.getElementById('apparent-temp');
+        const weatherDescEl = document.getElementById('weather-desc');
+        const weatherEmojiEl = document.getElementById('weather-emoji');
+        const prefNoteEl = document.getElementById('pref-note');
+
+        // WMO Weather Code Translator
+        function getWeatherInfo(code) {
+            const map = {
+                0: { desc: 'Clear sky', emoji: '☀️' },
+                1: { desc: 'Mainly clear', emoji: '🌤️' },
+                2: { desc: 'Partly cloudy', emoji: '⛅' },
+                3: { desc: 'Overcast', emoji: '☁️' },
+                45: { desc: 'Foggy', emoji: '🌫️' },
+                51: { desc: 'Light drizzle', emoji: '🌧️' },
+                61: { desc: 'Slight rain', emoji: '🌦️' },
+                63: { desc: 'Moderate rain', emoji: '🌧️' },
+                71: { desc: 'Snow fall', emoji: '❄️' },
+                95: { desc: 'Thunderstorm', emoji: '⚡' }
+            };
+            return map[code] || { desc: 'Clear conditions', emoji: '🌈' };
+        }
+
+        function getComfortMessage(temp, pref) {
+            if (pref === 'cold' && temp < 60) return "Might feel chilly to you! 🧣";
+            if (pref === 'hot' && temp > 75) return "Might feel warm to you! 🍦";
+            return "";
+        }
+
+        // Fetch Live Weather from Open-Meteo
+        async function fetchWeather(cityName) {
+            try {
+                errorBox.classList.add('hidden');
+                if (!cityName || !cityName.trim()) {
+                    throw new Error("Please enter a valid city name.");
+                }
+
+                searchBtn.textContent = "Loading...";
+                searchBtn.disabled = true;
+
+                // 1. Get Coordinates
+                const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName.trim())}&count=1`);
+                const geoData = await geoRes.json();
+
+                if (!geoData.results || geoData.results.length === 0) {
+                    throw new Error(`City "${cityName}" not found. Check your spelling.`);
+                }
+
+                const loc = geoData.results[0];
+                state.city = `${loc.name}${loc.country ? ', ' + loc.country : ''}`;
+
+                // 2. Get Weather Forecast
+                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,apparent_temperature,weather_code&temperature_unit=fahrenheit`);
+                const weatherData = await weatherRes.json();
+
+                if (!weatherData.current) {
+                    throw new Error("Weather data currently unavailable.");
+                }
+
+                state.temp = Math.round(weatherData.current.temperature_2m);
+                state.feelsLike = Math.round(weatherData.current.apparent_temperature);
+
+                const info = getWeatherInfo(weatherData.current.weather_code);
+                state.desc = info.desc;
+                state.emoji = info.emoji;
+
+                render();
+            } catch (err) {
+                errorBox.textContent = err.message;
+                errorBox.classList.remove('hidden');
+            } finally {
+                searchBtn.textContent = "Search";
+                searchBtn.disabled = false;
+            }
+        }
+
+        // Render UI
+        function render() {
+            cityNameEl.textContent = state.city;
+            temperatureEl.textContent = state.temp;
+            apparentTempEl.textContent = state.feelsLike;
+            weatherDescEl.textContent = state.desc;
+            weatherEmojiEl.textContent = state.emoji;
+            prefNoteEl.textContent = getComfortMessage(state.temp, state.tempPref);
+        }
+
+        function updateGreeting() {
+            if (state.userName) {
+                greetingTitle.textContent = `Hello, ${state.userName}! 🌤️`;
+            } else {
+                greetingTitle.textContent = `Pastel Weather`;
+            }
+        }
+
+        // Event Listeners
+        searchBtn.addEventListener('click', () => fetchWeather(cityInput.value));
+        cityInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') fetchWeather(cityInput.value);
+        });
+
+        toggleSettingsBtn.addEventListener('click', () => {
+            settingsBox.classList.toggle('hidden');
+        });
+
+        saveSettingsBtn.addEventListener('click', () => {
+            state.userName = inputName.value.trim();
+            const checkedRadio = document.querySelector('input[name="temp-pref"]:checked');
+            if (checkedRadio) state.tempPref = checkedRadio.value;
+
+            localStorage.setItem('weather_name', state.userName);
+            localStorage.setItem('weather_pref', state.tempPref);
+
+            updateGreeting();
+            settingsBox.classList.add('hidden');
+            if (state.temp !== null) render();
+        });
+
+        // Initialize App on Load
+        if (state.userName) inputName.value = state.userName;
+        const savedRadio = document.querySelector(`input[name="temp-pref"][value="${state.tempPref}"]`);
+        if (savedRadio) savedRadio.checked = true;
+        updateGreeting();
+
+        // Load default city immediately so page isn't empty
+        fetchWeather('New York');
+    </script>
 </body>
 </html>
