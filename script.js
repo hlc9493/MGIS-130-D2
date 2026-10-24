@@ -1,84 +1,160 @@
 /* ==========================================
-   1. DATA / STATE
+   1. DATA & STATE
    ========================================== */
 const state = {
-    userName: localStorage.getItem('pastel_weather_name') || '',
-    tempPref: localStorage.getItem('pastel_weather_pref') || 'neutral',
+    userName: localStorage.getItem('pokedex_trainer_name') || '',
+    tempPref: localStorage.getItem('pokedex_trainer_pref') || 'neutral',
     city: '',
     temp: null,
     feelsLike: null,
     desc: '',
-    emoji: '🌤️'
+    code: 0
 };
 
 /* ==========================================
-   2. BUSINESS / LOGIC RULES
+   2. CANVAS ANIMATED BACKGROUND ENGINE
    ========================================== */
-function getWeatherInfo(code) {
-    const map = {
-        0: { desc: 'Clear sky', emoji: '☀️' },
-        1: { desc: 'Mainly clear', emoji: '🌤️' },
-        2: { desc: 'Partly cloudy', emoji: '⛅' },
-        3: { desc: 'Overcast', emoji: '☁️' },
-        45: { desc: 'Foggy', emoji: '🌫️' },
-        51: { desc: 'Light drizzle', emoji: '🌧️' },
-        61: { desc: 'Slight rain', emoji: '🌦️' },
-        63: { desc: 'Moderate rain', emoji: '🌧️' },
-        71: { desc: 'Snow fall', emoji: '❄️' },
-        95: { desc: 'Thunderstorm', emoji: '⚡' }
-    };
-    return map[code] || { desc: 'Clear conditions', emoji: '🌈' };
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let currentWeatherType = 'clear';
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function initParticles(type) {
+    particles = [];
+    currentWeatherType = type;
+    const count = type === 'rain' ? 120 : type === 'snow' ? 80 : type === 'thunder' ? 150 : 25;
+
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            speedY: type === 'rain' || type === 'thunder' ? 12 + Math.random() * 8 : type === 'snow' ? 1 + Math.random() * 2 : 0.3 + Math.random() * 0.5,
+            speedX: type === 'snow' ? Math.sin(i) * 1 : type === 'clear' ? 0.5 + Math.random() * 0.5 : 0,
+            size: type === 'snow' ? Math.random() * 4 + 2 : type === 'clear' ? Math.random() * 40 + 20 : Math.random() * 2 + 1
+        });
+    }
 }
 
-function getComfortMessage(temp, pref) {
-    if (pref === 'cold' && temp < 60) return "Might feel extra chilly to you! 🧣";
-    if (pref === 'cold' && temp >= 60 && temp <= 75) return "Nice & comfy weather for you! ✨";
-    if (pref === 'hot' && temp > 75) return "Might feel extra hot to you! 🍦";
-    if (pref === 'hot' && temp <= 75 && temp >= 60) return "A bit cool for your liking! 🧥";
-    if (pref === 'neutral') return "Standard conditions today! 👍";
-    return "";
+function animateBackground() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (currentWeatherType === 'clear') {
+        ctx.fillStyle = '#87CEEB';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        particles.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+            p.x += p.speedX;
+            if (p.x > canvas.width + 50) p.x = -50;
+        });
+    } else if (currentWeatherType === 'rain' || currentWeatherType === 'thunder') {
+        ctx.fillStyle = currentWeatherType === 'thunder' ? '#1a1c2e' : '#2c3e50';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.strokeStyle = '#a4b0be';
+        ctx.lineWidth = 2;
+        particles.forEach(p => {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p.x, p.y + p.size * 5);
+            ctx.stroke();
+            p.y += p.speedY;
+            if (p.y > canvas.height) p.y = -10;
+        });
+
+        if (currentWeatherType === 'thunder' && Math.random() < 0.02) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+    } else if (currentWeatherType === 'snow') {
+        ctx.fillStyle = '#2b3a4a';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ffffff';
+        particles.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+            p.y += p.speedY;
+            p.x += p.speedX;
+            if (p.y > canvas.height) p.y = -5;
+        });
+    }
+
+    requestAnimationFrame(animateBackground);
 }
 
+initParticles('clear');
+animateBackground();
+
+/* ==========================================
+   3. POKÉMON DATA MAPPER
+   ========================================== */
+function getPokemonData(code) {
+    if (code === 0 || code === 1) {
+        return { desc: 'Sunny / Clear', avatar: '☀️ Pikachu', bg: 'clear' };
+    } else if (code === 2 || code === 3) {
+        return { desc: 'Cloudy', avatar: '⛅ Castform', bg: 'clear' };
+    } else if (code >= 51 && code <= 65) {
+        return { desc: 'Rainy', avatar: '🌧️ Squirtle', bg: 'rain' };
+    } else if (code >= 71 && code <= 77) {
+        return { desc: 'Snowy', avatar: '❄️ Abomasnow', bg: 'snow' };
+    } else if (code >= 95) {
+        return { desc: 'Thunderstorm', avatar: '⚡ Zapdos', bg: 'thunder' };
+    }
+    return { desc: 'Clear Skies', avatar: '🌈 Dragonite', bg: 'clear' };
+}
+
+function getTrainerAdvice(temp, pref) {
+    let advice = "";
+    if (pref === 'cold' && temp < 60) advice = "TRAINER ADVICE: WEAR A HEAVY JACKET!";
+    else if (pref === 'hot' && temp > 75) advice = "TRAINER ADVICE: STAY HYDRATED WITH FRESH WATER!";
+    else advice = "TRAINER ADVICE: GREAT CONDITIONS FOR WILD ENCOUNTERS!";
+    return advice;
+}
+
+/* ==========================================
+   4. API & LOGIC CONTROLLERS
+   ========================================== */
 async function fetchWeather(cityName) {
     const searchBtn = document.getElementById('search-btn');
     const errorMessage = document.getElementById('error-message');
 
     try {
         if (errorMessage) errorMessage.classList.add('hidden');
-        if (!cityName || !cityName.trim()) {
-            throw new Error("Please enter a city name.");
-        }
+        if (!cityName || !cityName.trim()) throw new Error("ENTER LOCATION NAME.");
 
         if (searchBtn) {
-            searchBtn.textContent = 'LOADING...';
+            searchBtn.textContent = 'SCANNING...';
             searchBtn.disabled = true;
         }
 
-        // 1. Geocoding API
         const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName.trim())}&count=1`);
         const geoData = await geoRes.json();
 
         if (!geoData.results || geoData.results.length === 0) {
-            throw new Error(`City "${cityName}" not found. Check spelling.`);
+            throw new Error(`LOCATION "${cityName}" NOT FOUND.`);
         }
 
         const loc = geoData.results[0];
         state.city = `${loc.name}${loc.country ? ', ' + loc.country : ''}`;
 
-        // 2. Weather API
         const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current=temperature_2m,apparent_temperature,weather_code&temperature_unit=fahrenheit`);
         const weatherData = await weatherRes.json();
 
-        if (!weatherData.current) {
-            throw new Error("Weather details unavailable.");
-        }
+        if (!weatherData.current) throw new Error("WEATHER SIGNAL LOST.");
 
         state.temp = Math.round(weatherData.current.temperature_2m);
         state.feelsLike = Math.round(weatherData.current.apparent_temperature);
-
-        const info = getWeatherInfo(weatherData.current.weather_code);
-        state.desc = info.desc;
-        state.emoji = info.emoji;
+        state.code = weatherData.current.weather_code;
 
         render();
     } catch (err) {
@@ -88,14 +164,14 @@ async function fetchWeather(cityName) {
         }
     } finally {
         if (searchBtn) {
-            searchBtn.textContent = 'SEARCH';
+            searchBtn.textContent = 'SCAN';
             searchBtn.disabled = false;
         }
     }
 }
 
 /* ==========================================
-   3. DISPLAY / UI CONTROLLERS
+   5. UI RENDERING
    ========================================== */
 const searchForm = document.getElementById('search-form');
 const cityInput = document.getElementById('city-input');
@@ -109,24 +185,28 @@ const cityNameEl = document.getElementById('city-name');
 const temperatureEl = document.getElementById('temperature');
 const apparentTempEl = document.getElementById('apparent-temp');
 const weatherDescEl = document.getElementById('weather-desc');
-const weatherEmojiEl = document.getElementById('weather-emoji');
+const pokemonAvatarEl = document.getElementById('pokemon-avatar');
 const preferenceNoteEl = document.getElementById('preference-note');
 
 function render() {
+    const pokeInfo = getPokemonData(state.code);
+
     if (cityNameEl) cityNameEl.textContent = state.city;
     if (temperatureEl) temperatureEl.textContent = state.temp;
     if (apparentTempEl) apparentTempEl.textContent = state.feelsLike;
-    if (weatherDescEl) weatherDescEl.textContent = state.desc;
-    if (weatherEmojiEl) weatherEmojiEl.textContent = state.emoji;
-    if (preferenceNoteEl) preferenceNoteEl.textContent = getComfortMessage(state.temp, state.tempPref);
+    if (weatherDescEl) weatherDescEl.textContent = pokeInfo.desc;
+    if (pokemonAvatarEl) pokemonAvatarEl.textContent = pokeInfo.avatar;
+    if (preferenceNoteEl) preferenceNoteEl.textContent = getTrainerAdvice(state.temp, state.tempPref);
+
+    initParticles(pokeInfo.bg);
 }
 
 function updateGreeting() {
     if (greetingTitle) {
         if (state.userName) {
-            greetingTitle.textContent = `Hello, ${state.userName}! 🌤️`;
+            greetingTitle.textContent = `TRAINER ${state.userName.toUpperCase()}`;
         } else {
-            greetingTitle.textContent = `Pastel Weather`;
+            greetingTitle.textContent = `TRAINER WEATHER`;
         }
     }
 }
@@ -151,8 +231,8 @@ if (saveSettingsBtn) {
         const selectedRadio = document.querySelector('input[name="temp-preference"]:checked');
         if (selectedRadio) state.tempPref = selectedRadio.value;
 
-        localStorage.setItem('pastel_weather_name', state.userName);
-        localStorage.setItem('pastel_weather_pref', state.tempPref);
+        localStorage.setItem('pokedex_trainer_name', state.userName);
+        localStorage.setItem('pokedex_trainer_pref', state.tempPref);
 
         updateGreeting();
         if (settingsBox) settingsBox.classList.add('hidden');
@@ -166,4 +246,4 @@ const radio = document.querySelector(`input[name="temp-preference"][value="${sta
 if (radio) radio.checked = true;
 
 updateGreeting();
-fetchWeather('New York');
+fetchWeather('Pallet Town');
