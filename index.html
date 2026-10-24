@@ -3,81 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pastel Weather App</title>
-    <!-- Cute Google Font -->
+    <title>Pokédex Weather Station</title>
+    <!-- Pixelated / Retro Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <main class="app-wrapper">
-        <header class="app-header">
-            <span class="app-badge">LIVE FORECAST</span>
-            <h1 id="greeting-title">Pastel Weather</h1>
-            <p class="subtitle">Real-time weather data powered by Open-Meteo</p>
+    <!-- Live Animated Canvas Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <main class="pokedex-wrapper">
+        <!-- Pokédex Top Bar -->
+        <header class="pokedex-header">
+            <div class="camera-lens"></div>
+            <div class="status-lights">
+                <span class="light red"></span>
+                <span class="light yellow"></span>
+                <span class="light green"></span>
+            </div>
         </header>
+
+        <!-- Greeting & Badge -->
+        <div class="title-section">
+            <span class="badge">POKÉDEX V2.0</span>
+            <h1 id="greeting-title">TRAINER WEATHER</h1>
+        </div>
 
         <!-- Preferences Toggle Button -->
         <div class="settings-toggle-container">
-            <button id="settings-toggle-btn" class="secondary-btn" type="button">⚙️ Preferences</button>
+            <button id="settings-toggle-btn" class="pokedex-btn secondary" type="button">⚙️ TRAINER CARD</button>
         </div>
 
         <!-- Preferences Box -->
         <section id="settings-box" class="settings-box hidden">
-            <h3>USER PREFERENCES</h3>
+            <h3>TRAINER PROFILE</h3>
             <div class="form-group">
-                <label for="user-name-input">YOUR NAME</label>
-                <input type="text" id="user-name-input" placeholder="Enter name..." autocomplete="off">
+                <label for="user-name-input">TRAINER NAME</label>
+                <input type="text" id="user-name-input" placeholder="Ash..." autocomplete="off">
             </div>
             <div class="form-group">
-                <label>TEMPERATURE COMFORT</label>
+                <label>RUNS COLD / HOT?</label>
                 <div class="radio-group">
                     <label class="radio-label">
                         <input type="radio" name="temp-preference" value="cold">
-                        <span>❄️ Cold</span>
+                        <span>❄️ COLD</span>
                     </label>
                     <label class="radio-label">
                         <input type="radio" name="temp-preference" value="neutral" checked>
-                        <span>😊 Neutral</span>
+                        <span>😊 OK</span>
                     </label>
                     <label class="radio-label">
                         <input type="radio" name="temp-preference" value="hot">
-                        <span>🔥 Hot</span>
+                        <span>🔥 HOT</span>
                     </label>
                 </div>
             </div>
-            <button id="save-settings-btn" type="button">SAVE PREFERENCES</button>
+            <button id="save-settings-btn" class="pokedex-btn" type="button">SAVE DATA</button>
         </section>
 
-        <!-- Search Section -->
+        <!-- Search Controls -->
         <section class="search-section">
             <form id="search-form" class="search-box" action="javascript:void(0);">
-                <input type="text" id="city-input" placeholder="Enter city (e.g. London)..." autocomplete="off" aria-label="City name">
-                <button id="search-btn" type="submit">SEARCH</button>
+                <input type="text" id="city-input" placeholder="LOCATION (e.g. Pallet Town, Tokyo)..." autocomplete="off" aria-label="City name">
+                <button id="search-btn" class="pokedex-btn" type="submit">SCAN</button>
             </form>
         </section>
 
-        <!-- Error Message Banner -->
+        <!-- Error Banner -->
         <div id="error-message" class="error-message hidden" role="alert"></div>
 
-        <!-- Weather Display Card -->
-        <section id="weather-card" class="weather-card">
+        <!-- Screen Display Card -->
+        <section id="weather-card" class="pokedex-screen">
+            <div class="scanline"></div>
             <div class="card-header">
-                <h2 id="city-name">Loading...</h2>
+                <h2 id="city-name">SCANNING...</h2>
                 <span id="weather-desc" class="weather-desc">--</span>
             </div>
 
             <div class="card-body">
-                <div class="weather-icon" id="weather-emoji" aria-hidden="true">🌤️</div>
+                <div class="pokemon-avatar" id="pokemon-avatar">⚡</div>
                 <div class="temp-wrapper">
                     <div class="temp-display">
                         <span id="temperature">--</span><span class="unit">°F</span>
                     </div>
-                    <p class="feels-like">Feels like <span id="apparent-temp">--</span>°F</p>
+                    <p class="feels-like">FEELS LIKE <span id="apparent-temp">--</span>°F</p>
                 </div>
             </div>
-            <p id="preference-note" class="preference-note"></p>
+
+            <div class="pokedex-log">
+                <p id="preference-note">INITIALIZING WEATHER SCANNER...</p>
+            </div>
         </section>
     </main>
 
