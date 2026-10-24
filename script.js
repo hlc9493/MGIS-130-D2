@@ -31,8 +31,11 @@ function getWeatherInfo(code) {
 }
 
 function getComfortMessage(temp, pref) {
-    if (pref === 'cold' && temp < 60) return "Might feel chilly to you! 🧣";
-    if (pref === 'hot' && temp > 75) return "Might feel warm to you! 🍦";
+    if (pref === 'cold' && temp < 60) return "Might feel extra chilly to you! 🧣";
+    if (pref === 'cold' && temp >= 60 && temp <= 75) return "Nice & comfy weather for you! ✨";
+    if (pref === 'hot' && temp > 75) return "Might feel extra hot to you! 🍦";
+    if (pref === 'hot' && temp <= 75 && temp >= 60) return "A bit cool for your liking! 🧥";
+    if (pref === 'neutral') return "Standard conditions today! 👍";
     return "";
 }
 
@@ -47,7 +50,7 @@ async function fetchWeather(cityName) {
         }
 
         if (searchBtn) {
-            searchBtn.textContent = 'Loading...';
+            searchBtn.textContent = 'LOADING...';
             searchBtn.disabled = true;
         }
 
@@ -56,7 +59,7 @@ async function fetchWeather(cityName) {
         const geoData = await geoRes.json();
 
         if (!geoData.results || geoData.results.length === 0) {
-            throw new Error(`City "${cityName}" not found. Check your spelling.`);
+            throw new Error(`City "${cityName}" not found. Check spelling.`);
         }
 
         const loc = geoData.results[0];
@@ -67,7 +70,7 @@ async function fetchWeather(cityName) {
         const weatherData = await weatherRes.json();
 
         if (!weatherData.current) {
-            throw new Error("Weather details currently unavailable.");
+            throw new Error("Weather details unavailable.");
         }
 
         state.temp = Math.round(weatherData.current.temperature_2m);
@@ -85,7 +88,7 @@ async function fetchWeather(cityName) {
         }
     } finally {
         if (searchBtn) {
-            searchBtn.textContent = 'Search';
+            searchBtn.textContent = 'SEARCH';
             searchBtn.disabled = false;
         }
     }
