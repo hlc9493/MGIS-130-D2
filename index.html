@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pastel Weather App</title>
+    <!-- Cute Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <main class="app-wrapper">
         <header class="app-header">
-            <span class="app-badge">Live Forecast</span>
+            <span class="app-badge">LIVE FORECAST</span>
             <h1 id="greeting-title">Pastel Weather</h1>
-            <p class="subtitle" id="greeting-subtitle">Real-time weather data powered by Open-Meteo</p>
+            <p class="subtitle">Real-time weather data powered by Open-Meteo</p>
         </header>
 
         <!-- Preferences Toggle Button -->
@@ -19,15 +23,15 @@
             <button id="settings-toggle-btn" class="secondary-btn" type="button">⚙️ Preferences</button>
         </div>
 
-        <!-- Preferences Drawer -->
+        <!-- Preferences Box -->
         <section id="settings-box" class="settings-box hidden">
-            <h3>User Preferences</h3>
+            <h3>USER PREFERENCES</h3>
             <div class="form-group">
-                <label for="user-name-input">Your Name</label>
-                <input type="text" id="user-name-input" placeholder="Enter your name..." autocomplete="off">
+                <label for="user-name-input">YOUR NAME</label>
+                <input type="text" id="user-name-input" placeholder="Enter name..." autocomplete="off">
             </div>
             <div class="form-group">
-                <label>Do you usually run...</label>
+                <label>TEMPERATURE COMFORT</label>
                 <div class="radio-group">
                     <label class="radio-label">
                         <input type="radio" name="temp-preference" value="cold">
@@ -43,14 +47,14 @@
                     </label>
                 </div>
             </div>
-            <button id="save-settings-btn" type="button">Save Preferences</button>
+            <button id="save-settings-btn" type="button">SAVE PREFERENCES</button>
         </section>
 
         <!-- Search Section -->
         <section class="search-section">
             <form id="search-form" class="search-box" action="javascript:void(0);">
-                <input type="text" id="city-input" placeholder="Enter city name (e.g. London, Tokyo)..." autocomplete="off" aria-label="City name">
-                <button id="search-btn" type="submit">Search</button>
+                <input type="text" id="city-input" placeholder="Enter city (e.g. London)..." autocomplete="off" aria-label="City name">
+                <button id="search-btn" type="submit">SEARCH</button>
             </form>
         </section>
 
@@ -71,9 +75,9 @@
                         <span id="temperature">--</span><span class="unit">°F</span>
                     </div>
                     <p class="feels-like">Feels like <span id="apparent-temp">--</span>°F</p>
-                    <p id="preference-note" class="preference-note"></p>
                 </div>
             </div>
+            <p id="preference-note" class="preference-note"></p>
         </section>
     </main>
 
