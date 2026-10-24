@@ -5,7 +5,8 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Space Mono', monospace;
+    border-radius: 0 !important; /* Forces strict sharp corners everywhere */
 }
 
 body {
@@ -24,17 +25,13 @@ body {
    RESPONSIVE LAYOUT CONTAINER
    ========================================== */
 .app-wrapper {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.95);
     padding: 2.25rem 2rem;
-    border-radius: 28px;
-    box-shadow: 0 16px 40px rgba(100, 110, 140, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 6px 6px 0px #3f51b5;
+    border: 2px solid #3f51b5;
     width: 100%;
     max-width: 460px;
     margin: auto;
-    transition: all 0.3s ease;
 }
 
 @media (min-width: 768px) {
@@ -60,12 +57,11 @@ body {
     display: inline-block;
     padding: 0.25rem 0.75rem;
     background-color: #e8eaf6;
-    color: #5c6bc0;
-    font-size: 0.75rem;
+    color: #3f51b5;
+    font-size: 0.7rem;
     font-weight: 700;
-    text-transform: uppercase;
     letter-spacing: 1px;
-    border-radius: 20px;
+    border: 1px solid #3f51b5;
     margin-bottom: 0.5rem;
 }
 
@@ -77,7 +73,7 @@ body {
 }
 
 .subtitle {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #78909c;
 }
 
@@ -92,12 +88,12 @@ body {
 
 .secondary-btn {
     background-color: #e8eaf6;
-    color: #5c6bc0;
+    color: #3f51b5;
     padding: 0.4rem 0.8rem;
-    font-size: 0.85rem;
-    border-radius: 10px;
-    border: none;
+    font-size: 0.8rem;
+    border: 1px solid #3f51b5;
     cursor: pointer;
+    font-weight: bold;
 }
 
 .secondary-btn:hover {
@@ -106,15 +102,14 @@ body {
 
 .settings-box {
     background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 16px;
+    border: 2px solid #3f51b5;
     padding: 1.25rem;
     margin-bottom: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    box-shadow: 4px 4px 0px rgba(63, 81, 181, 0.2);
 }
 
 .settings-box h3 {
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     color: #3f51b5;
     margin-bottom: 0.75rem;
 }
@@ -125,8 +120,8 @@ body {
 
 .form-group label {
     display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     color: #546e7a;
     margin-bottom: 0.35rem;
 }
@@ -144,10 +139,9 @@ body {
     justify-content: center;
     padding: 0.5rem;
     background: #f5f5f5;
-    border-radius: 10px;
     cursor: pointer;
-    font-size: 0.85rem;
-    border: 1px solid transparent;
+    font-size: 0.75rem;
+    border: 1px solid #cfd8dc;
 }
 
 .radio-label input {
@@ -156,7 +150,7 @@ body {
 
 .radio-label:has(input:checked) {
     background: #e8eaf6;
-    border-color: #9fa8da;
+    border: 2px solid #3f51b5;
     color: #3f51b5;
     font-weight: bold;
 }
@@ -175,39 +169,34 @@ body {
 
 input[type="text"] {
     flex: 1;
-    padding: 0.85rem 1.1rem;
-    border: 2px solid #e0e0e0;
+    padding: 0.75rem 1rem;
+    border: 2px solid #3f51b5;
     background: #ffffff;
-    border-radius: 14px;
     outline: none;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     color: #37474f;
-    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input[type="text"]:focus {
-    border-color: #9fa8da;
-    box-shadow: 0 0 0 3px rgba(159, 168, 218, 0.25);
+    background-color: #fafafa;
 }
 
 button {
-    padding: 0.85rem 1.4rem;
-    background-color: #7986cb;
+    padding: 0.75rem 1.2rem;
+    background-color: #3f51b5;
     color: white;
-    border: none;
-    border-radius: 14px;
+    border: 2px solid #3f51b5;
     cursor: pointer;
-    font-size: 0.95rem;
-    font-weight: 600;
-    transition: background-color 0.2s, transform 0.1s;
+    font-size: 0.85rem;
+    font-weight: 700;
 }
 
 button:hover {
-    background-color: #5c6bc0;
+    background-color: #303f9f;
 }
 
 button:active {
-    transform: scale(0.97);
+    transform: translate(2px, 2px);
 }
 
 /* ==========================================
@@ -221,39 +210,37 @@ button:active {
     background-color: #ffebee;
     color: #c62828;
     padding: 0.85rem 1rem;
-    border-radius: 14px;
     margin-bottom: 1rem;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     text-align: center;
-    border: 1px solid #ffcdd2;
+    border: 2px solid #c62828;
 }
 
 .weather-card {
-    background: linear-gradient(180deg, #ffffff 0%, #f4f5f9 100%);
-    border-radius: 20px;
-    padding: 1.75rem 1.5rem;
-    border: 1px solid #e8eaf6;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+    background: #ffffff;
+    padding: 1.5rem;
+    border: 2px solid #3f51b5;
+    box-shadow: 4px 4px 0px #e8eaf6;
 }
 
 .card-header {
     text-align: center;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px dashed #e0e0e0;
     margin-bottom: 1.25rem;
 }
 
 .card-header h2 {
-    font-size: 1.4rem;
+    font-size: 1.25rem;
     color: #2c3e50;
     margin-bottom: 0.25rem;
 }
 
 .weather-desc {
     display: inline-block;
-    font-size: 0.95rem;
-    color: #5c6bc0;
-    font-weight: 600;
+    font-size: 0.85rem;
+    color: #3f51b5;
+    font-weight: 700;
     text-transform: capitalize;
 }
 
@@ -265,7 +252,7 @@ button:active {
 }
 
 .weather-icon {
-    font-size: 4.2rem;
+    font-size: 3.8rem;
     line-height: 1;
 }
 
@@ -275,28 +262,30 @@ button:active {
 }
 
 .temp-display {
-    font-size: 3.2rem;
-    font-weight: 800;
+    font-size: 2.8rem;
+    font-weight: 700;
     color: #263238;
     line-height: 1;
 }
 
 .temp-display .unit {
-    font-size: 1.8rem;
-    font-weight: 500;
+    font-size: 1.5rem;
+    font-weight: 400;
     color: #78909c;
     margin-left: 2px;
 }
 
 .feels-like {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #78909c;
     margin-top: 0.35rem;
 }
 
 .preference-note {
-    font-size: 0.8rem;
-    color: #5c6bc0;
-    font-style: italic;
-    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    color: #3f51b5;
+    text-align: center;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f0f0f0;
 }
